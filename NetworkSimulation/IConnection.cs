@@ -7,6 +7,6 @@ namespace NetworkSimulation
     public interface IConnection
     {
         void ReceiveData(byte[] bData);
-
+        byte[] GetData();
     }
 }

@@ -17,8 +17,10 @@ namespace NetworkSimulation
 
         public void Cycle()
         {
+            
             foreach(Connector connSrc in Connectors)
             {
+                connSrc.OutboundBytes = connSrc.ConnectedObject.GetData();
                 byte[] bOutboundBytes = connSrc.OutboundBytes;
                 foreach(Connector connDest in Connectors)
                 {
@@ -31,11 +33,20 @@ namespace NetworkSimulation
             foreach(Connector conn in Connectors)
             {
                 conn.ConnectedObject.ReceiveData(conn.InboundBytes);
+                conn.InboundBytes = null;
             }
         }
 
         public class Connector
         {
+            public Connector(IConnection connectedObject) : this()
+            {
+                ConnectedObject = connectedObject;
+            }
+            public Connector()
+            {
+                Id = Guid.NewGuid();
+            }
             public Guid Id { get; set; }
             public IConnection ConnectedObject { get; set; }
             public void SendBytes(byte[] bSend)
@@ -44,18 +55,21 @@ namespace NetworkSimulation
             }
             public void ReceiveBytes(byte[] bReceive)
             {
-                if(InboundBytes.Length < bReceive.Length)
+                if (bReceive != null)
                 {
-                    byte[] bNewLength = (byte[])bReceive.Clone();
-                    Array.Copy(InboundBytes, bNewLength, InboundBytes.Length);
-                    InboundBytes = bNewLength;
-                }
+                    if (InboundBytes == null) InboundBytes = new byte[0];
+                    if (InboundBytes.Length < bReceive.Length)
+                    {
+                        byte[] bNewLength = (byte[])bReceive.Clone();
+                        Array.Copy(InboundBytes, bNewLength, InboundBytes.Length);
+                        InboundBytes = bNewLength;
+                    }
 
-                for (int i = 0; i < bReceive.Length; i++)
-                {
-                    InboundBytes[i] = (byte)(bReceive[i] | InboundBytes[i]);
+                    for (int i = 0; i < bReceive.Length; i++)
+                    {
+                        InboundBytes[i] = (byte)(bReceive[i] | InboundBytes[i]);
+                    }
                 }
-                
             }
         
             

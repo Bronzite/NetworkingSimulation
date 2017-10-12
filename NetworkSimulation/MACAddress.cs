@@ -51,6 +51,30 @@ namespace NetworkSimulation
             }
         }
 
+        public override string ToString()
+        {
+            string s = BitConverter.ToString(mAddress); ;
+            return s;
+        }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is MACAddress)
+            {
+                MACAddress other = obj as MACAddress;
+                for(int i =0;i<other.mAddress.Length;i++)
+                {
+                    if(mAddress[i] != other.mAddress[i])
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+                return false;
+
+            
+        }
     }
 }

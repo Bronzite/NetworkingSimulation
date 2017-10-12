@@ -8,7 +8,20 @@ namespace NetworkSimulation
         public MACAddress DestinationAddress { get; set; }
         public UInt16 Length { get; set; }
 
-        public byte[] Payload { get; set; }
+        private byte[] mPayload;
+        public byte[] Payload {
+            get { return mPayload; }
+            set
+            {
+                mPayload = value;
+                Length = (ushort)(Payload.Length + 18);
+                if(Length < 64)
+                {
+                    //Payload is too short.  Throw exception.
+                    throw new Exception("Payload Lenght too short.");
+                }
+            }
+        }
 
         public UInt32 Checksum { get; set; }
         public bool CheckCRC()
